@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.time.Instant;
 
 public class ClientProxy implements OrderService {
 
@@ -21,14 +22,17 @@ public class ClientProxy implements OrderService {
         rpcRequest.setFieldClasses(new Class[]{String.class, String.class});
         rpcRequest.setFieldNames(new String[]{userId, productId});
         rpcRequest.setFieldValues(new Object[]{"hqy", "1234"});
-
+        Instant start = Instant.now();
+        System.out.println("当前时间戳（毫秒）: " + start.toEpochMilli());
         Socket socket = new Socket("127.0.0.1", 8888);
+        Instant end = Instant.now();
+        System.out.println("当前时间戳（毫秒）: " + end.toEpochMilli());
         Object response = null;
         try (ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream())) {
             oos.writeObject(rpcRequest);
             oos.flush();
             System.out.println("rpc请求发送成功！等待执行......");
-            Thread.sleep(4000);
+            Thread.sleep(0);
             ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
             response = inputStream.readObject();
             System.out.println("成功执行，执行结果已返回！");
