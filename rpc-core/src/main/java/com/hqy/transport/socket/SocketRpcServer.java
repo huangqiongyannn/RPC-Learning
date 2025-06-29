@@ -4,6 +4,10 @@ import com.hqy.config.RpcServerConfig;
 import com.hqy.entity.RpcRequest;
 import com.hqy.entity.RpcResponse;
 import com.hqy.handler.RequestHandler;
+import com.hqy.prodider.ServiceProvider;
+import com.hqy.prodider.impl.TestServiceProvider;
+import com.hqy.register.ServiceRegister;
+import com.hqy.register.impl.TestServiceRegister;
 import com.hqy.serialize.SerializeFactory;
 import com.hqy.serialize.Serializer;
 import com.hqy.serialize.SerializerType;
@@ -13,19 +17,24 @@ import com.hqy.utils.TimeUtil;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class SocketRpcServer implements RpcServer {
 
-
+    private ServiceRegister register = new TestServiceRegister();
+    private ServiceProvider provider = new TestServiceProvider();
+    private RequestHandler handler = new RequestHandler();
+    private String bindHost;
     private int bindPort;
     private SerializerType serializerType;
+    private RpcServerConfig config;
+
 
     public SocketRpcServer(RpcServerConfig config) {
+        this.config = config;
         this.bindPort = config.getPort();
+        this.bindHost = config.getHost();
         this.serializerType = config.getSerializerType();
     }
 
@@ -51,7 +60,7 @@ public class SocketRpcServer implements RpcServer {
             System.out.println("收到的RPC请求：" + request.toString());
 
             // 方法执行
-            RpcResponse response = RequestHandler.handleRequest(request);
+            RpcResponse response = handler.handle(request);
 
             // 序列化，返回执行结果
             byte[] reponseBytes = serializer.serialize(response);
@@ -80,5 +89,11 @@ public class SocketRpcServer implements RpcServer {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void publicService(Object service, String serviceName) {
+        provider.addService(serviceName, service);
+        register.register(serviceName, bindHost + ":" + bindPort);
     }
 }

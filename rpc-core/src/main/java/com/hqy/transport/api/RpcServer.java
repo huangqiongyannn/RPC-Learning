@@ -5,4 +5,5 @@ import com.hqy.serialize.SerializerType;
 
 public interface RpcServer {
     void start();
+    void publicService(Object service, String ServiceName);
 }

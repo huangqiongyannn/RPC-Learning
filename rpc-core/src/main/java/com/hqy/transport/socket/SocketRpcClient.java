@@ -1,8 +1,11 @@
 package com.hqy.transport.socket;
 
+import com.hqy.api.OrderService;
 import com.hqy.config.RpcClientConfig;
 import com.hqy.entity.RpcRequest;
 import com.hqy.entity.RpcResponse;
+import com.hqy.register.ServiceRegister;
+import com.hqy.register.impl.TestServiceRegister;
 import com.hqy.serialize.SerializeFactory;
 import com.hqy.serialize.Serializer;
 import com.hqy.serialize.SerializerType;
@@ -11,25 +14,27 @@ import com.hqy.utils.TimeUtil;
 
 import java.io.*;
 import java.net.Socket;
-import java.time.Instant;
+import java.util.List;
 
 public class SocketRpcClient implements RpcClient {
 
-    private int serverPort;
-    private String serverHost;
+    private final ServiceRegister registry = new TestServiceRegister();
     private SerializerType serializerType;
 
     public SocketRpcClient(RpcClientConfig config) {
-        this.serverPort = config.getServerPort();
-        this.serverHost = config.getServerHost();
         this.serializerType = config.getSerializerType();
     }
 
     @Override
     public RpcResponse sendRequest(RpcRequest request) throws IOException {
+        ServiceRegister register = new TestServiceRegister();
+        System.out.println(OrderService.class.getName());
+        System.out.println(register.lookup(OrderService.class.getName()));
+        List<String> lookup = registry.lookup(request.getClassName());
 
+        String[] split = lookup.get(0).split(":");
         System.out.println("请求已发送出去，开始时间为: " + TimeUtil.getCurrentTime());
-        Socket socket = new Socket(serverHost, serverPort);
+        Socket socket = new Socket(split[0], Integer.parseInt(split[1]));
 
         InputStream is = socket.getInputStream();
         OutputStream os = socket.getOutputStream();

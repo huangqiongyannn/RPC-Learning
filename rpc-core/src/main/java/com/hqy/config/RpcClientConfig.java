@@ -9,6 +9,6 @@ public class RpcClientConfig {
     private int port = 8888;
     private String host = "127.0.0.1";
     private SerializerType serializerType = SerializerType.JAVA;
-    private int serverPort = 8888;
-    private String serverHost = "127.0.0.1";
+//    private int serverPort = 8888;
+//    private String serverHost = "127.0.0.1";
 }
