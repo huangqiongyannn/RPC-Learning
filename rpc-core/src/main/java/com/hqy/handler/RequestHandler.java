@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 
 public class RequestHandler {
 
+    // 通过反射来完成
     public static RpcResponse handleRequest(RpcRequest request) {
         RpcResponse<Object> response = null;
         try {

@@ -10,7 +10,7 @@ public class ClientTest {
     public static void main(String[] args) throws IOException{
 
         RpcClientConfig config = new RpcClientConfig();
-        ClientProxy clientProxy = new ClientProxy(new SocketRpcClient(), config);
+        ClientProxy clientProxy = new ClientProxy(new SocketRpcClient(config));
         String userId = "hqy";
         String orderId = "1234";
         String response = clientProxy.createOrder(userId, orderId);

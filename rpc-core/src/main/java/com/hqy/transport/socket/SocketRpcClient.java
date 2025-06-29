@@ -1,5 +1,6 @@
 package com.hqy.transport.socket;
 
+import com.hqy.config.RpcClientConfig;
 import com.hqy.entity.RpcRequest;
 import com.hqy.entity.RpcResponse;
 import com.hqy.serialize.SerializeFactory;
@@ -13,11 +14,22 @@ import java.net.Socket;
 import java.time.Instant;
 
 public class SocketRpcClient implements RpcClient {
+
+    private int serverPort;
+    private String serverHost;
+    private SerializerType serializerType;
+
+    public SocketRpcClient(RpcClientConfig config) {
+        this.serverPort = config.getServerPort();
+        this.serverHost = config.getServerHost();
+        this.serializerType = config.getSerializerType();
+    }
+
     @Override
-    public RpcResponse sendRequest(int port, String host, RpcRequest request, SerializerType serializerType) throws IOException {
+    public RpcResponse sendRequest(RpcRequest request) throws IOException {
 
         System.out.println("请求已发送出去，开始时间为: " + TimeUtil.getCurrentTime());
-        Socket socket = new Socket(host, port);
+        Socket socket = new Socket(serverHost, serverPort);
 
         InputStream is = socket.getInputStream();
         OutputStream os = socket.getOutputStream();

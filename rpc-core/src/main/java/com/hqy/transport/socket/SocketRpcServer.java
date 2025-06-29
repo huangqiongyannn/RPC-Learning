@@ -1,5 +1,6 @@
 package com.hqy.transport.socket;
 
+import com.hqy.config.RpcServerConfig;
 import com.hqy.entity.RpcRequest;
 import com.hqy.entity.RpcResponse;
 import com.hqy.handler.RequestHandler;
@@ -20,7 +21,15 @@ import java.util.concurrent.Executors;
 public class SocketRpcServer implements RpcServer {
 
 
-    private void task(Socket clientSocket, SerializerType type) {
+    private int bindPort;
+    private SerializerType serializerType;
+
+    public SocketRpcServer(RpcServerConfig config) {
+        this.bindPort = config.getPort();
+        this.serializerType = config.getSerializerType();
+    }
+
+    private void task(Socket clientSocket) {
         System.out.println("线程开始执行时间：" + TimeUtil.getCurrentTime());
         System.out.println("客户端已连接，IP：" + clientSocket.getLocalAddress());
         try {
@@ -35,7 +44,7 @@ public class SocketRpcServer implements RpcServer {
             byte[] requestBytes = new byte[length];
             dis.readFully(requestBytes);
 
-            Serializer serializer = SerializeFactory.getSerializer(type);
+            Serializer serializer = SerializeFactory.getSerializer(serializerType);
 
             // 反序列化
             RpcRequest request = serializer.deserialize(requestBytes, RpcRequest.class);
@@ -58,14 +67,14 @@ public class SocketRpcServer implements RpcServer {
     }
 
     @Override
-    public void start(int port, SerializerType type) {
+    public void start() {
         ExecutorService pool = Executors.newFixedThreadPool(10);
-        try (ServerSocket serverSocket = new ServerSocket(port)) {
+        try (ServerSocket serverSocket = new ServerSocket(bindPort)) {
             System.out.println("监听端口已启动！");
             while (true) {
                 Socket clientSocket = serverSocket.accept();
                 pool.submit(()-> {
-                    task(clientSocket, type);
+                    task(clientSocket);
                 });
             }
         } catch (Exception e) {

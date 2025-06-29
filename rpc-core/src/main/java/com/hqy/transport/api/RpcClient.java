@@ -7,5 +7,5 @@ import com.hqy.serialize.SerializerType;
 import java.io.IOException;
 
 public interface RpcClient {
-    RpcResponse sendRequest(int port, String ip, RpcRequest request, SerializerType type) throws IOException;
+    RpcResponse sendRequest(RpcRequest request) throws IOException;
 }

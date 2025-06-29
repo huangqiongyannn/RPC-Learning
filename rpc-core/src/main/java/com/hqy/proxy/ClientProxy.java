@@ -17,15 +17,9 @@ import java.time.Instant;
 public class ClientProxy implements OrderService {
 
     private RpcClient rpcClient;
-    private int serverPort;
-    private String serverHost;
-    private SerializerType serializerType;
 
-    public ClientProxy(RpcClient rpcClient, RpcClientConfig config) {
+    public ClientProxy(RpcClient rpcClient) {
         this.rpcClient = rpcClient;
-        serverPort = config.getServerPort();
-        serverHost = config.getServerHost();
-        serializerType = config.getSerializerType();
     }
 
     @Override
@@ -38,7 +32,7 @@ public class ClientProxy implements OrderService {
                 .fieldNames(new String[]{"userId", "productId"})
                 .fieldValues(new Object[]{"hqy", "1234"})
                 .build();
-        RpcResponse response = rpcClient.sendRequest(serverPort, serverHost, rpcRequest, serializerType);
+        RpcResponse response = rpcClient.sendRequest(rpcRequest);
         if (response.isSuccess()) {
             return (String) response.getData();
         } else {

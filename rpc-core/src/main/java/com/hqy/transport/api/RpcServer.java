@@ -4,5 +4,5 @@ import com.hqy.serialize.Serializer;
 import com.hqy.serialize.SerializerType;
 
 public interface RpcServer {
-    void start(int port, SerializerType type);
+    void start();
 }
