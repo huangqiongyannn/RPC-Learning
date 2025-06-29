@@ -1,10 +1,12 @@
 package com.hqy.entity;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
 
+@Builder
 @Data
 public class RpcRequest implements Serializable {
     // 类的全路径名
