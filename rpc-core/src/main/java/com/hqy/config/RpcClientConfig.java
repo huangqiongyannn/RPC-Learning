@@ -12,6 +12,12 @@ public class RpcClientConfig {
     private String host = "127.0.0.1";
     private SerializerType serializerType = SerializerType.JAVA;
 
+    private RpcClientConfig() {}
+
+    public static RpcClientConfig getInstance() {
+        return INSTANCE;
+    }
+
     public void init(String appName, String host, int port, SerializerType serializerType) {
         this.applicationName = appName;
         this.host = host;
