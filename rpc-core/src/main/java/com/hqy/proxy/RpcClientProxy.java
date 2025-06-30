@@ -12,7 +12,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.InetSocketAddress;
 import java.util.List;
-import java.util.UUID;
 
 public class RpcClientProxy implements InvocationHandler {
 

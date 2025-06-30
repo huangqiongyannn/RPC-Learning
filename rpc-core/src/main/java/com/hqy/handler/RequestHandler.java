@@ -18,7 +18,7 @@ public class RequestHandler {
             Object o = aClass.getConstructor().newInstance();
             Method method = aClass.getMethod(request.getMethodName(), request.getFieldClasses());
             Object result = method.invoke(o, request.getFieldValues());
-            Thread.sleep(5000);
+//            Thread.sleep(5000);
             response = RpcResponse.success(result);
             return response;
         } catch (Exception e) {
