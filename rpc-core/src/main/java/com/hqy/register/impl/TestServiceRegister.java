@@ -15,7 +15,7 @@ public class TestServiceRegister implements ServiceRegister {
     }
 
     @Override
-    public void register(String serviceName, String serviceAddress) {
+    public void registry(String serviceName, String serviceAddress) {
 //        registry.computeIfAbsent(serviceName, k -> new ArrayList<>()).add(serviceAddress);
 //        System.out.println("服务注册成功！服务名为：" + serviceName + " 地址：" + serviceAddress);
     }

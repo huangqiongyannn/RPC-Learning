@@ -5,7 +5,8 @@ import com.hqy.entity.RpcResponse;
 import com.hqy.serialize.SerializerType;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 
 public interface RpcClient {
-    RpcResponse sendRequest(RpcRequest request) throws IOException;
+    RpcResponse sendRequest(RpcRequest request, InetSocketAddress address) throws IOException;
 }

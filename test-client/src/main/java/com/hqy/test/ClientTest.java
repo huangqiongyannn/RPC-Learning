@@ -1,18 +1,15 @@
 package com.hqy.test;
 
 import com.hqy.api.OrderService;
-import com.hqy.config.RpcClientConfig;
 import com.hqy.proxy.RpcClientProxy;
 import com.hqy.transport.socket.SocketRpcClient;
 
 import java.io.*;
-import java.lang.reflect.Proxy;
 
 public class ClientTest {
     public static void main(String[] args) throws IOException{
-        
-        RpcClientConfig config = new RpcClientConfig();
-        RpcClientProxy clientProxy = new RpcClientProxy(new SocketRpcClient(config), OrderService.class);
+        // 创建客户端代理对象
+        RpcClientProxy clientProxy = new RpcClientProxy(new SocketRpcClient(), OrderService.class);
         OrderService service = clientProxy.getProxy();
         String userId = "hqy";
         String orderId = "1234";

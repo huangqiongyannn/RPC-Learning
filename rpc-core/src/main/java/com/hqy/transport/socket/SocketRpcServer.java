@@ -4,10 +4,11 @@ import com.hqy.config.RpcServerConfig;
 import com.hqy.entity.RpcRequest;
 import com.hqy.entity.RpcResponse;
 import com.hqy.handler.RequestHandler;
-import com.hqy.prodider.ServiceProvider;
-import com.hqy.prodider.impl.TestServiceProvider;
+import com.hqy.provider.ServiceProvider;
+import com.hqy.provider.impl.LocalServiceProvider;
 import com.hqy.register.ServiceRegister;
 import com.hqy.register.impl.TestServiceRegister;
+import com.hqy.register.impl.ZKServiceRegister;
 import com.hqy.serialize.SerializeFactory;
 import com.hqy.serialize.Serializer;
 import com.hqy.serialize.SerializerType;
@@ -22,25 +23,22 @@ import java.util.concurrent.Executors;
 
 public class SocketRpcServer implements RpcServer {
 
-    private ServiceRegister register = new TestServiceRegister();
-    private ServiceProvider provider = new TestServiceProvider();
+    private ServiceProvider provider = LocalServiceProvider.getInstance();
     private RequestHandler handler = new RequestHandler();
-    private String bindHost;
     private int bindPort;
     private SerializerType serializerType;
     private RpcServerConfig config;
 
 
-    public SocketRpcServer(RpcServerConfig config) {
-        this.config = config;
+    public SocketRpcServer() {
+        this.config = RpcServerConfig.getInstance();
         this.bindPort = config.getPort();
-        this.bindHost = config.getHost();
         this.serializerType = config.getSerializerType();
     }
 
     private void task(Socket clientSocket) {
+        System.out.println("请求来自：" + clientSocket.getInetAddress().toString());
         System.out.println("线程开始执行时间：" + TimeUtil.getCurrentTime());
-        System.out.println("客户端已连接，IP：" + clientSocket.getLocalAddress());
         try {
 
             InputStream is = clientSocket.getInputStream();
@@ -57,7 +55,6 @@ public class SocketRpcServer implements RpcServer {
 
             // 反序列化
             RpcRequest request = serializer.deserialize(requestBytes, RpcRequest.class);
-            System.out.println("收到的RPC请求：" + request.toString());
 
             // 方法执行
             RpcResponse response = handler.handle(request);
@@ -69,7 +66,7 @@ public class SocketRpcServer implements RpcServer {
             dos.flush();
 
             // 返回执行结果
-            System.out.println("成功返回响应结果！结束时间：" + TimeUtil.getCurrentTime());
+            System.out.println("线程执行结束时间：" + TimeUtil.getCurrentTime());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -79,7 +76,7 @@ public class SocketRpcServer implements RpcServer {
     public void start() {
         ExecutorService pool = Executors.newFixedThreadPool(10);
         try (ServerSocket serverSocket = new ServerSocket(bindPort)) {
-            System.out.println("监听端口已启动！");
+            System.out.println(bindPort + "监听端口已启动！");
             while (true) {
                 Socket clientSocket = serverSocket.accept();
                 pool.submit(()-> {
@@ -89,11 +86,5 @@ public class SocketRpcServer implements RpcServer {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public void publicService(Object service, String serviceName) {
-        provider.addService(serviceName, service);
-        register.register(serviceName, bindHost + ":" + bindPort);
     }
 }
