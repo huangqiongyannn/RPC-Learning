@@ -36,14 +36,14 @@ public class RpcClientProxy implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         System.out.println("rpc请求已发送出去，开始时间；" + TimeUtil.getCurrentTime());
-        RpcRequest request = RpcRequest.builder()
-                .className(targetInterface.getName())
-                .methodName(method.getName())
-                .returnClass(method.getReturnType())
-                .fieldClasses(method.getParameterTypes())
-//                .fieldNames(getParameterNames(method))  // 可选
-                .fieldValues(args)
-                .build();
+        RpcRequest request = new RpcRequest();
+        request.setClassName(targetInterface.getName());
+        request.setMethodName(method.getName());
+        request.setReturnClass(method.getReturnType());
+        request.setFieldClasses(method.getParameterTypes());
+// request.setFieldNames(getParameterNames(method));  // 可选
+        request.setFieldValues(args);
+
         // 服务发现
         List<String> lookup = register.lookup(targetInterface.getName());
         if (lookup == null || lookup.size() == 0) {

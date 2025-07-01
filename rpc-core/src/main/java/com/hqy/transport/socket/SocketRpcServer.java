@@ -6,7 +6,7 @@ import com.hqy.entity.RpcResponse;
 import com.hqy.handler.socket.RequestHandler;
 import com.hqy.serialize.SerializeFactory;
 import com.hqy.serialize.Serializer;
-import com.hqy.serialize.SerializerType;
+import com.hqy.enumeration.SerializerType;
 import com.hqy.transport.api.RpcServer;
 import com.hqy.utils.TimeUtil;
 

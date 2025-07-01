@@ -1,12 +1,12 @@
 package com.hqy.entity;
 
+import com.sun.org.apache.xml.internal.security.utils.RFC2253Parser;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
 
-@Builder
 @Data
 public class RpcRequest implements Serializable {
     // 类的全路径名
@@ -21,4 +21,5 @@ public class RpcRequest implements Serializable {
     private Object[] fieldValues;
     // 返回值类型
     private Class<?> returnClass;
+
 }

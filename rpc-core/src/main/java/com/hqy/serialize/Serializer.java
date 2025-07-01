@@ -1,6 +1,8 @@
 package com.hqy.serialize;
 
+import com.hqy.Exception.SerializerException;
+
 public interface Serializer {
     byte[] serialize(Object obj);
-    <T> T  deserialize(byte[] bytes, Class<T> clazz);
+    <T> T  deserialize(byte[] bytes, Class<T> clazz) throws SerializerException;
 }

@@ -23,6 +23,7 @@ public class NettyRpcClient implements RpcClient {
 
     public NettyRpcClient() {
         SerializerType serializerType = RpcClientConfig.getInstance().getSerializerType();
+        System.out.println("客户端使用的序列化方法是：" + serializerType.toString());
         EventLoopGroup worker = new NioEventLoopGroup();
         this.bootstrap = new Bootstrap();
         bootstrap.group(worker)

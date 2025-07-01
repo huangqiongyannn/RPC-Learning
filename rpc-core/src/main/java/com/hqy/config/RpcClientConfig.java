@@ -1,6 +1,6 @@
 package com.hqy.config;
 
-import com.hqy.serialize.SerializerType;
+import com.hqy.enumeration.SerializerType;
 import lombok.Data;
 
 @Data

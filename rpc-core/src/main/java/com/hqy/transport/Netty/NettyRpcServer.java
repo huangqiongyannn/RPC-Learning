@@ -32,7 +32,7 @@ public class NettyRpcServer implements RpcServer {
 
         // 获取序列化器
         SerializerType serializerType = RpcServerConfig.getInstance().getSerializerType();
-
+        System.out.println("服务器端使用的序列化方法是：" + serializerType.toString());
         // 配置netty启动类
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
