@@ -1,8 +1,12 @@
 package com.hqy.transport.Netty;
 
+import com.hqy.config.RpcClientConfig;
 import com.hqy.entity.RpcRequest;
 import com.hqy.entity.RpcResponse;
+import com.hqy.enumeration.SerializerType;
 import com.hqy.handler.netty.NettyClientHandler;
+import com.hqy.serialize.SerializeFactory;
+import com.hqy.serialize.Serializer;
 import com.hqy.transport.api.RpcClient;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
@@ -18,6 +22,7 @@ public class NettyRpcClient implements RpcClient {
     private final Bootstrap bootstrap;
 
     public NettyRpcClient() {
+        SerializerType serializerType = RpcClientConfig.getInstance().getSerializerType();
         EventLoopGroup worker = new NioEventLoopGroup();
         this.bootstrap = new Bootstrap();
         bootstrap.group(worker)
@@ -25,8 +30,8 @@ public class NettyRpcClient implements RpcClient {
                 .handler(new ChannelInitializer<SocketChannel>() {
                     protected void initChannel(SocketChannel ch) {
                         ChannelPipeline pipeline = ch.pipeline();
-                        pipeline.addLast(new RpcDecoder(RpcResponse.class));
-                        pipeline.addLast(new RpcEncoder());
+                        pipeline.addLast(new RpcDecoder());
+                        pipeline.addLast(new RpcEncoder(serializerType));
                         pipeline.addLast(new NettyClientHandler()); // 自定义业务处理
                     }
                 });
@@ -34,7 +39,7 @@ public class NettyRpcClient implements RpcClient {
 
 
     @Override
-    public RpcResponse sendRequest(RpcRequest request, InetSocketAddress address) throws IOException {
+    public RpcResponse sendRequest(RpcRequest request, InetSocketAddress address) {
         String host = address.getHostString();
         int port = address.getPort();
         try {

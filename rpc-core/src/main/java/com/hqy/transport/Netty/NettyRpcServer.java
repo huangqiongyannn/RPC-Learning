@@ -2,8 +2,10 @@ package com.hqy.transport.Netty;
 
 import com.hqy.config.RpcServerConfig;
 import com.hqy.entity.RpcRequest;
-import com.hqy.entity.RpcResponse;
+import com.hqy.enumeration.SerializerType;
 import com.hqy.handler.netty.NettyServerHandler;
+import com.hqy.serialize.SerializeFactory;
+import com.hqy.serialize.Serializer;
 import com.hqy.transport.api.RpcServer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -27,6 +29,10 @@ public class NettyRpcServer implements RpcServer {
         // 监听连接请求
         EventLoopGroup boss = new NioEventLoopGroup();
         EventLoopGroup worker = new NioEventLoopGroup();
+
+        // 获取序列化器
+        SerializerType serializerType = RpcServerConfig.getInstance().getSerializerType();
+
         // 配置netty启动类
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
@@ -35,8 +41,8 @@ public class NettyRpcServer implements RpcServer {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         protected void initChannel(SocketChannel ch) {
                             ChannelPipeline pipeline = ch.pipeline();
-                            pipeline.addLast(new RpcDecoder(RpcRequest.class));
-                            pipeline.addLast(new RpcEncoder());
+                            pipeline.addLast(new RpcDecoder());
+                            pipeline.addLast(new RpcEncoder(serializerType));
                             pipeline.addLast(new NettyServerHandler()); // 自定义业务处理
                         }
                     });
