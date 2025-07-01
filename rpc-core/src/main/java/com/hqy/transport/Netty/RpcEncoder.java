@@ -10,11 +10,11 @@ import io.netty.handler.codec.MessageToByteEncoder;
 
 public class RpcEncoder extends MessageToByteEncoder<Object> {
     @Override
-    protected void encode(ChannelHandlerContext channelHandlerContext, Object msg, ByteBuf byteBuf) throws Exception {
+    protected void encode(ChannelHandlerContext ctx, Object msg, ByteBuf out) throws Exception {
         SerializerType serializerType = RpcServerConfig.getInstance().getSerializerType();
         Serializer serializer = SerializeFactory.getSerializer(serializerType);
         byte[] bytes = serializer.serialize(msg);
-        byteBuf.writeInt(bytes.length);
-        byteBuf.writeBytes(bytes);
+        out.writeInt(bytes.length);
+        out.writeBytes(bytes);
     }
 }

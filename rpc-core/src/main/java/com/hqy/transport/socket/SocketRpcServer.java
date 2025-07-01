@@ -3,12 +3,7 @@ package com.hqy.transport.socket;
 import com.hqy.config.RpcServerConfig;
 import com.hqy.entity.RpcRequest;
 import com.hqy.entity.RpcResponse;
-import com.hqy.handler.RequestHandler;
-import com.hqy.provider.ServiceProvider;
-import com.hqy.provider.impl.LocalServiceProvider;
-import com.hqy.register.ServiceRegister;
-import com.hqy.register.impl.TestServiceRegister;
-import com.hqy.register.impl.ZKServiceRegister;
+import com.hqy.handler.socket.RequestHandler;
 import com.hqy.serialize.SerializeFactory;
 import com.hqy.serialize.Serializer;
 import com.hqy.serialize.SerializerType;
@@ -23,16 +18,15 @@ import java.util.concurrent.Executors;
 
 public class SocketRpcServer implements RpcServer {
 
-    private ServiceProvider provider = LocalServiceProvider.getInstance();
     private RequestHandler handler = new RequestHandler();
-    private int bindPort;
+    private int port;
     private SerializerType serializerType;
     private RpcServerConfig config;
 
 
     public SocketRpcServer() {
         this.config = RpcServerConfig.getInstance();
-        this.bindPort = config.getPort();
+        this.port = config.getPort();
         this.serializerType = config.getSerializerType();
     }
 
@@ -75,8 +69,8 @@ public class SocketRpcServer implements RpcServer {
     @Override
     public void start() {
         ExecutorService pool = Executors.newFixedThreadPool(10);
-        try (ServerSocket serverSocket = new ServerSocket(bindPort)) {
-            System.out.println(bindPort + "监听端口已启动！");
+        try (ServerSocket serverSocket = new ServerSocket(port)) {
+            System.out.println(port + "监听端口已启动！");
             while (true) {
                 Socket clientSocket = serverSocket.accept();
                 pool.submit(()-> {

@@ -2,6 +2,7 @@ package com.hqy.test;
 
 import com.hqy.api.OrderService;
 import com.hqy.proxy.RpcClientProxy;
+import com.hqy.transport.Netty.NettyRpcClient;
 import com.hqy.transport.socket.SocketRpcClient;
 
 import java.io.*;
@@ -9,7 +10,7 @@ import java.io.*;
 public class ClientTest {
     public static void main(String[] args) throws IOException{
         // 创建客户端代理对象
-        RpcClientProxy clientProxy = new RpcClientProxy(new SocketRpcClient(), OrderService.class);
+        RpcClientProxy clientProxy = new RpcClientProxy(new NettyRpcClient(), OrderService.class);
         OrderService service = clientProxy.getProxy();
         String userId = "hqy";
         String orderId = "1234";
