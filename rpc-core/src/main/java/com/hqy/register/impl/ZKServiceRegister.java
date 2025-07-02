@@ -1,8 +1,12 @@
 package com.hqy.register.impl;
 
+import com.google.common.cache.LoadingCache;
 import com.hqy.register.ServiceRegister;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.framework.recipes.cache.CuratorCache;
+import org.apache.curator.framework.recipes.cache.CuratorCacheListener;
+import org.apache.curator.framework.recipes.cache.PathChildrenCache;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.CreateMode;
 
@@ -62,11 +66,44 @@ public class ZKServiceRegister implements ServiceRegister {
     @Override
     public List<String> lookup(String serviceName) {
         try {
-            List<String> children = client.getChildren().forPath("/" + serviceName);
-            return children;
+            return client.getChildren().forPath("/" + serviceName);
         } catch (Exception e) {
             System.out.println("该服务不存在：" + serviceName);
             return null;
+        }
+    }
+
+
+    public void subscribeWatcher(String serviceName, LoadingCache<String, List<String>> cache) {
+        try {
+            String path = "/" + serviceName;
+
+            // 创建并启动 CuratorCache（监听整个子树）
+            CuratorCache curatorCache = CuratorCache.build(client, path);
+
+            // 创建监听器
+            CuratorCacheListener listener = CuratorCacheListener.builder()
+                    .forAll((type, oldNode, newNode) -> {
+                        switch (type) {
+                            case NODE_CREATED:
+                            case NODE_CHANGED:
+                            case NODE_DELETED:
+                                List<String> updatedList = this.lookup(serviceName);
+                                cache.put(serviceName, updatedList);
+                                System.out.println("[ZK] 节点变化(" + type + ")，更新缓存：" + serviceName + " -> " + updatedList);
+                                break;
+                            default:
+                                break;
+                        }
+                    })
+                    .build();
+
+            curatorCache.listenable().addListener(listener);
+            curatorCache.start();
+
+            System.out.println("[ZK] CuratorCache 监听启动：" + path);
+        } catch (Exception e) {
+            System.err.println("[ZK] CuratorCache 注册监听器失败：" + e.getMessage());
         }
     }
 }

@@ -22,9 +22,12 @@ public class ZKServiceCacheManager {
             .build(new CacheLoader<String, List<String>>() {
                 @Override
                 public List<String> load(String serviceName){
-                    return zkClient.lookup(serviceName);
+                    List<String> nodes = zkClient.lookup(serviceName);
+                    zkClient.subscribeWatcher(serviceName, cache);
+                    return nodes;
                 }
             });
+
 
     public static ZKServiceCacheManager getInstance() {
         return INSTANCE;
