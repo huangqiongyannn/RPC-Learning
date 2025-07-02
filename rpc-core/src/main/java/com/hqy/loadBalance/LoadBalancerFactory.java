@@ -1,6 +1,7 @@
 package com.hqy.loadBalance;
 
 import com.hqy.enumeration.LoadBalanceType;
+import com.hqy.loadBalance.impl.ConsistentHashLoadBalancer;
 import com.hqy.loadBalance.impl.RandomLoadBalancer;
 import com.hqy.loadBalance.impl.RoundRobinLoadBalancer;
 
@@ -14,6 +15,7 @@ public class LoadBalancerFactory {
     static {
         map.put(LoadBalanceType.RANDOM, new RandomLoadBalancer());
         map.put(LoadBalanceType.ROUND_ROBIN, new RoundRobinLoadBalancer());
+        map.put(LoadBalanceType.CONSISTENT_HASH, new ConsistentHashLoadBalancer());
     }
 
     public static LoadBalancer getLoadBalancer(LoadBalanceType type) {

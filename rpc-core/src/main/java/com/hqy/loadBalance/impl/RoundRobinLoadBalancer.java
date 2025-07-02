@@ -1,15 +1,16 @@
 package com.hqy.loadBalance.impl;
 
 import com.hqy.loadBalance.LoadBalancer;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 
 public class RoundRobinLoadBalancer implements LoadBalancer {
 
-    private final ConcurrentMap<String, AtomicInteger> counterMap = new ConcurrentHashMap<>();
+    private final static Map<String, AtomicInteger> counterMap = new HashMap<>();
 
     @Override
     public String select(String serviceName, List<String> serviceAddresses) {

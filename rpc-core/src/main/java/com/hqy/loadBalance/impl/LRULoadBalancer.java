@@ -6,7 +6,7 @@ import java.util.List;
 
 public class LRULoadBalancer implements LoadBalancer {
     @Override
-    public String select(List<String> serviceAddresses) {
+    public String select(String serviceName, List<String> serviceAddresses) {
         return null;
     }
 }

@@ -1,6 +1,10 @@
 package com.hqy.register.impl;
 
 import com.google.common.cache.LoadingCache;
+import com.hqy.enumeration.LoadBalanceType;
+import com.hqy.loadBalance.LoadBalancer;
+import com.hqy.loadBalance.LoadBalancerFactory;
+import com.hqy.loadBalance.impl.ConsistentHashLoadBalancer;
 import com.hqy.register.ServiceRegister;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -74,7 +78,7 @@ public class ZKServiceRegister implements ServiceRegister {
     }
 
 
-    public void subscribeWatcher(String serviceName, LoadingCache<String, List<String>> cache) {
+    public void subscribeWatcherForCache(String serviceName, LoadingCache<String, List<String>> cache) {
         try {
             String path = "/" + serviceName;
 
@@ -104,6 +108,72 @@ public class ZKServiceRegister implements ServiceRegister {
             System.out.println("[ZK] CuratorCache 监听启动：" + path);
         } catch (Exception e) {
             System.err.println("[ZK] CuratorCache 注册监听器失败：" + e.getMessage());
+        }
+    }
+
+    public void subscribeWatcherForCHLoadBalancer(String serviceName) {
+        try {
+            String path = "/" + serviceName;
+
+            // 创建并启动 CuratorCache（监听整个子树）
+            CuratorCache curatorCache = CuratorCache.build(client, path);
+
+            ConsistentHashLoadBalancer loadBalancer = (ConsistentHashLoadBalancer) LoadBalancerFactory.getLoadBalancer(LoadBalanceType.CONSISTENT_HASH);
+            // 创建监听器
+            CuratorCacheListener listener = CuratorCacheListener.builder()
+                    .forAll((type, oldNode, newNode) -> {
+                        switch (type) {
+                            case NODE_CREATED:
+                            case NODE_CHANGED:
+                                System.out.println("[ZK] 节点新增/修改: " + newNode.getPath());
+                                loadBalancer.addNode(serviceName, newNode);
+                                break;
+                            case NODE_DELETED:
+                                if (oldNode != null) {
+                                    System.out.println("[ZK] 节点删除: " + oldNode.getPath());
+                                    loadBalancer.delNode(serviceName, oldNode);
+                                } else {
+                                    System.out.println("[ZK] 删除事件触发了，但 oldNode 为空！");
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+
+                    })
+                    .build();
+
+            curatorCache.listenable().addListener(listener);
+            curatorCache.start();
+        } catch (Exception e) {
+            throw new RuntimeException("负载均衡监听节点出现异常" + e.getMessage());
+        }
+    }
+
+    public void print(String serviceName) {
+        try {
+            List<String> children = client.getChildren().forPath("/" + serviceName);
+            for (String child : children) {
+                System.out.println("服务实例节点: " + child);
+            }
+        } catch (Exception e) {
+
+        }
+    }
+
+    public void offline(String serviceName, String serviceAddress) {
+        String instancePath = "/" + serviceName + "/" + serviceAddress;
+
+        try {
+            if (client.checkExists().forPath(instancePath) != null) {
+                client.delete().forPath(instancePath);
+                System.out.println("节点已下线：" + instancePath);
+            } else {
+                System.out.println("该节点不存在：" + instancePath);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

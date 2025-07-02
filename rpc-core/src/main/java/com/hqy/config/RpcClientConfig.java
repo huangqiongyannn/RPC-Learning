@@ -19,4 +19,15 @@ public class RpcClientConfig {
     public static RpcClientConfig getInstance() {
         return INSTANCE;
     }
+
+    @Override
+    public String toString() {
+        return "RpcClientConfig{" +
+                "applicationName='" + applicationName + '\'' +
+                ", port=" + port +
+                ", host='" + host + '\'' +
+                ", serializerType=" + serializerType +
+                ", loadBalanceType=" + loadBalanceType +
+                '}';
+    }
 }

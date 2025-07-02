@@ -23,7 +23,7 @@ public class ZKServiceCacheManager {
                 @Override
                 public List<String> load(String serviceName){
                     List<String> nodes = zkClient.lookup(serviceName);
-                    zkClient.subscribeWatcher(serviceName, cache);
+                    zkClient.subscribeWatcherForCache(serviceName, cache);
                     return nodes;
                 }
             });
