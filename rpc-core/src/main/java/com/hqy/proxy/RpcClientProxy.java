@@ -6,6 +6,7 @@ import com.hqy.entity.RpcResponse;
 import com.hqy.enumeration.LoadBalanceType;
 import com.hqy.loadBalance.LoadBalancerFactory;
 import com.hqy.register.ServiceRegister;
+import com.hqy.register.cache.ZKServiceCacheManager;
 import com.hqy.register.impl.ZKServiceRegister;
 import com.hqy.transport.api.RpcClient;
 import com.hqy.utils.TimeUtil;
@@ -20,7 +21,8 @@ public class RpcClientProxy implements InvocationHandler {
 
     private RpcClient rpcClient;
     private Class<?> targetInterface;
-    private ServiceRegister register = ZKServiceRegister.getInstance();
+//    private ServiceRegister register = ZKServiceRegister.getInstance();
+    private ZKServiceCacheManager cacheManager = ZKServiceCacheManager.getInstance();
 
     public RpcClientProxy(RpcClient rpcClient, Class<?> targetInterface) {
         this.rpcClient = rpcClient;
@@ -48,7 +50,8 @@ public class RpcClientProxy implements InvocationHandler {
         request.setFieldValues(args);
 
         // 服务发现
-        List<String> serviceAddresses = register.lookup(targetInterface.getName());
+//        List<String> serviceAddresses = register.lookup(targetInterface.getName());
+        List<String> serviceAddresses = cacheManager.getService(targetInterface.getName());
         if (serviceAddresses == null || serviceAddresses.size() == 0) {
             throw new RuntimeException("服务发现失败！服务：" + targetInterface.getName());
         }
