@@ -1,5 +1,6 @@
 package com.hqy.config;
 
+import com.hqy.enumeration.LoadBalanceType;
 import com.hqy.enumeration.SerializerType;
 import lombok.Data;
 
@@ -11,17 +12,11 @@ public class RpcClientConfig {
     private int port = 8888;
     private String host = "127.0.0.1";
     private SerializerType serializerType = SerializerType.JAVA;
+    private LoadBalanceType loadBalanceType = LoadBalanceType.ROUND_ROBIN;
 
     private RpcClientConfig() {}
 
     public static RpcClientConfig getInstance() {
         return INSTANCE;
-    }
-
-    public void init(String appName, String host, int port, SerializerType serializerType) {
-        this.applicationName = appName;
-        this.host = host;
-        this.port = port;
-        this.serializerType = serializerType;
     }
 }

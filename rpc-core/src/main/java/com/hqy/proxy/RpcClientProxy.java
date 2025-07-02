@@ -1,7 +1,10 @@
 package com.hqy.proxy;
 
+import com.hqy.config.RpcClientConfig;
 import com.hqy.entity.RpcRequest;
 import com.hqy.entity.RpcResponse;
+import com.hqy.enumeration.LoadBalanceType;
+import com.hqy.loadBalance.LoadBalancerFactory;
 import com.hqy.register.ServiceRegister;
 import com.hqy.register.impl.ZKServiceRegister;
 import com.hqy.transport.api.RpcClient;
@@ -35,7 +38,7 @@ public class RpcClientProxy implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        System.out.println("rpc请求已发送出去，开始时间；" + TimeUtil.getCurrentTime());
+
         RpcRequest request = new RpcRequest();
         request.setClassName(targetInterface.getName());
         request.setMethodName(method.getName());
@@ -45,12 +48,18 @@ public class RpcClientProxy implements InvocationHandler {
         request.setFieldValues(args);
 
         // 服务发现
-        List<String> lookup = register.lookup(targetInterface.getName());
-        if (lookup == null || lookup.size() == 0) {
+        List<String> serviceAddresses = register.lookup(targetInterface.getName());
+        if (serviceAddresses == null || serviceAddresses.size() == 0) {
             throw new RuntimeException("服务发现失败！服务：" + targetInterface.getName());
         }
-        String[] address = lookup.get(0).split(":");
+
+        // 负载均衡
+        LoadBalanceType type = RpcClientConfig.getInstance().getLoadBalanceType();
+        String select = LoadBalancerFactory.getLoadBalancer(type).select(serviceAddresses);
+
+        String[] address = select.split(":");
         InetSocketAddress socketAddress = new InetSocketAddress(address[0], Integer.parseInt(address[1]));
+        System.out.println("rpc请求已发送出去，开始时间；" + TimeUtil.getCurrentTime());
         RpcResponse response = rpcClient.sendRequest(request, socketAddress);
         if (response.isSuccess()) {
             System.out.println("rpc请求已处理完毕返回，结束时间；" + TimeUtil.getCurrentTime());
