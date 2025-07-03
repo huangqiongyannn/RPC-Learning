@@ -3,6 +3,7 @@ package com.hqy.entity;
 import java.io.Serializable;
 
 public class RpcResponse<T> implements Serializable {
+    private int code;
     private boolean success;
     private T data;
     private String errorMessage;
@@ -12,6 +13,7 @@ public class RpcResponse<T> implements Serializable {
         RpcResponse<T> response = new RpcResponse<>();
         response.success = true;
         response.data = data;
+        response.code = 200;
         return response;
     }
 
@@ -19,6 +21,7 @@ public class RpcResponse<T> implements Serializable {
         RpcResponse<T> response = new RpcResponse<>();
         response.success = false;
         response.errorMessage = errorMessage;
+        response.code = 500;
         return response;
     }
 
