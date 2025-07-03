@@ -7,6 +7,7 @@ import com.hqy.enumeration.LoadBalanceType;
 import com.hqy.loadBalance.LoadBalancer;
 import com.hqy.loadBalance.LoadBalancerFactory;
 import com.hqy.loadBalance.impl.ConsistentHashLoadBalancer;
+import com.hqy.proxy.retry.GuavaRetry;
 import com.hqy.register.ServiceRegister;
 import com.hqy.register.cache.ZKServiceCacheManager;
 import com.hqy.register.impl.ZKServiceRegister;
@@ -42,7 +43,7 @@ public class RpcClientProxy implements InvocationHandler {
     }
 
     @Override
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    public Object invoke(Object proxy, Method method, Object[] args) {
 
         RpcRequest request = new RpcRequest();
         request.setClassName(targetInterface.getName());
@@ -75,7 +76,8 @@ public class RpcClientProxy implements InvocationHandler {
         String[] address = selected.split(":");
         InetSocketAddress socketAddress = new InetSocketAddress(address[0], Integer.parseInt(address[1]));
         System.out.println("rpc请求已发送出去，开始时间；" + TimeUtil.getCurrentTime());
-        RpcResponse response = rpcClient.sendRequest(request, socketAddress);
+        RpcResponse response = GuavaRetry.sendRequestWityRetry(request, socketAddress, rpcClient);
+//        RpcResponse response = rpcClient.sendRequest(request, socketAddress);
         if (response.isSuccess()) {
             System.out.println("rpc请求已处理完毕返回，结束时间；" + TimeUtil.getCurrentTime());
             return response.getData();
@@ -89,7 +91,7 @@ public class RpcClientProxy implements InvocationHandler {
         // 最简单策略：方法名 + 第一个参数的hash（如果有）
         StringBuilder sb = new StringBuilder(method.getName());
         if (args != null && args.length > 0 && args[0] != null) {
-            sb.append("#").append(args[0].toString());
+            sb.append("#").append(args[0]);
         }
         return sb.toString();
     }
