@@ -1,4 +1,4 @@
-package com.hqy.loadBalance;
+package com.hqy.loadBalancer;
 
 import java.util.List;
 

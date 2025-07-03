@@ -2,17 +2,26 @@ package com.hqy.handler.netty;
 
 import com.hqy.entity.RpcRequest;
 import com.hqy.entity.RpcResponse;
-import com.hqy.provider.ServiceProvider;
-import com.hqy.provider.impl.LocalServiceProvider;
+import com.hqy.limiter.impl.TokenBucketRateLimiter;
+import com.hqy.provider.service.ServiceProvider;
+import com.hqy.provider.service.impl.ZKServiceProvider;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
 import java.lang.reflect.Method;
 
 public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
-    private final ServiceProvider provider = LocalServiceProvider.getInstance();
+    private final ServiceProvider provider = ZKServiceProvider.getInstance();
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RpcRequest request) throws Exception {
+
+        // 限流器
+        boolean token = TokenBucketRateLimiter.getInstance().getToken();
+        if (!token) {
+            ctx.writeAndFlush(RpcResponse.fail("系统繁忙，请稍后再试！"));
+            ctx.close();
+            return;
+        }
         RpcResponse<Object> response = null;
         try {
             Object service = provider.getService(request.getClassName());

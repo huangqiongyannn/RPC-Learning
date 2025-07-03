@@ -1,4 +1,4 @@
-package com.hqy.provider;
+package com.hqy.provider.service;
 
 public interface ServiceProvider {
     void addService(Object service);

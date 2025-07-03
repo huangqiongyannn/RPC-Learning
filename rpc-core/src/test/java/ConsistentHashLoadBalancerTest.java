@@ -1,8 +1,7 @@
 
 
-import com.hqy.loadBalance.impl.ConsistentHashLoadBalancer;
+import com.hqy.loadBalancer.impl.ConsistentHashLoadBalancer;
 import com.hqy.register.impl.ZKServiceRegister;
-import org.apache.curator.framework.recipes.cache.ChildData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

@@ -1,9 +1,9 @@
-package com.hqy.loadBalance;
+package com.hqy.loadBalancer;
 
 import com.hqy.enumeration.LoadBalanceType;
-import com.hqy.loadBalance.impl.ConsistentHashLoadBalancer;
-import com.hqy.loadBalance.impl.RandomLoadBalancer;
-import com.hqy.loadBalance.impl.RoundRobinLoadBalancer;
+import com.hqy.loadBalancer.impl.ConsistentHashLoadBalancer;
+import com.hqy.loadBalancer.impl.RandomLoadBalancer;
+import com.hqy.loadBalancer.impl.RoundRobinLoadBalancer;
 
 import java.util.HashMap;
 import java.util.Map;

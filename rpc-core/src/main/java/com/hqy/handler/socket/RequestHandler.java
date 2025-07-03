@@ -2,13 +2,13 @@ package com.hqy.handler.socket;
 
 import com.hqy.entity.RpcRequest;
 import com.hqy.entity.RpcResponse;
-import com.hqy.provider.ServiceProvider;
-import com.hqy.provider.impl.LocalServiceProvider;
+import com.hqy.provider.service.ServiceProvider;
+import com.hqy.provider.service.impl.ZKServiceProvider;
 
 import java.lang.reflect.Method;
 
 public class RequestHandler {
-    private final ServiceProvider provider = LocalServiceProvider.getInstance();
+    private final ServiceProvider provider = ZKServiceProvider.getInstance();
     // 通过反射来完成
     public  RpcResponse handle(RpcRequest request) {
         RpcResponse<Object> response = null;

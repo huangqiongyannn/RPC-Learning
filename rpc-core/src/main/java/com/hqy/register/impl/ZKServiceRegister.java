@@ -2,15 +2,13 @@ package com.hqy.register.impl;
 
 import com.google.common.cache.LoadingCache;
 import com.hqy.enumeration.LoadBalanceType;
-import com.hqy.loadBalance.LoadBalancer;
-import com.hqy.loadBalance.LoadBalancerFactory;
-import com.hqy.loadBalance.impl.ConsistentHashLoadBalancer;
+import com.hqy.loadBalancer.LoadBalancerFactory;
+import com.hqy.loadBalancer.impl.ConsistentHashLoadBalancer;
 import com.hqy.register.ServiceRegister;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.recipes.cache.CuratorCache;
 import org.apache.curator.framework.recipes.cache.CuratorCacheListener;
-import org.apache.curator.framework.recipes.cache.PathChildrenCache;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.CreateMode;
 

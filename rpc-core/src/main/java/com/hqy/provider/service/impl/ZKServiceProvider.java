@@ -1,24 +1,24 @@
-package com.hqy.provider.impl;
+package com.hqy.provider.service.impl;
 
 import com.hqy.config.RpcServerConfig;
-import com.hqy.provider.ServiceProvider;
+import com.hqy.provider.service.ServiceProvider;
 import com.hqy.register.ServiceRegister;
 import com.hqy.register.impl.ZKServiceRegister;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class LocalServiceProvider implements ServiceProvider {
-    private static final LocalServiceProvider INSTANCE = new LocalServiceProvider();
+public class ZKServiceProvider implements ServiceProvider {
+    private static final ZKServiceProvider INSTANCE = new ZKServiceProvider();
     // 本地映射表
     private final static Map<String, Object> serviceMap = new HashMap<>();
 
     private ServiceRegister register = ZKServiceRegister.getInstance();
     private RpcServerConfig config = RpcServerConfig.getInstance();
 
-    private LocalServiceProvider() {}
+    private ZKServiceProvider() {}
 
-    public static LocalServiceProvider getInstance() {
+    public static ZKServiceProvider getInstance() {
         return INSTANCE;
     }
 

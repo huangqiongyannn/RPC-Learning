@@ -1,10 +1,10 @@
-package com.hqy.serialize;
+package com.hqy.serializer;
 
 import com.hqy.enumeration.SerializerType;
-import com.hqy.serialize.impl.HessionSerializer;
-import com.hqy.serialize.impl.JavaSerializer;
-import com.hqy.serialize.impl.KryoSerializer;
-import com.hqy.serialize.impl.ProtostuffSerialzier;
+import com.hqy.serializer.impl.HessionSerializer;
+import com.hqy.serializer.impl.JavaSerializer;
+import com.hqy.serializer.impl.KryoSerializer;
+import com.hqy.serializer.impl.ProtostuffSerialzier;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package com.hqy.serialize.impl;
+package com.hqy.serializer.impl;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
@@ -6,7 +6,7 @@ import com.esotericsoftware.kryo.io.Output;
 import com.hqy.Exception.SerializerException;
 import com.hqy.entity.RpcRequest;
 import com.hqy.entity.RpcResponse;
-import com.hqy.serialize.Serializer;
+import com.hqy.serializer.Serializer;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

@@ -1,7 +1,7 @@
 package com.hqy.test;
 
 import com.hqy.config.RpcServerConfig;
-import com.hqy.provider.impl.LocalServiceProvider;
+import com.hqy.provider.service.impl.ZKServiceProvider;
 import com.hqy.enumeration.SerializerType;
 import com.hqy.service.OrderServiceImpl;
 import com.hqy.transport.Netty.NettyRpcServer;
@@ -12,7 +12,7 @@ public class ServerTest {
     public static void main(String[] args) {
         RpcServerConfig.getInstance().setSerializerType(SerializerType.HESSION);
         // 注册服务
-        LocalServiceProvider.getInstance().addService(new OrderServiceImpl());
+        ZKServiceProvider.getInstance().addService(new OrderServiceImpl());
 
 //        RpcServer server = new SocketRpcServer();
         RpcServer server = new NettyRpcServer();

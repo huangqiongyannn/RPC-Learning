@@ -1,4 +1,4 @@
-package com.hqy.serialize;
+package com.hqy.serializer;
 
 import com.hqy.Exception.SerializerException;
 

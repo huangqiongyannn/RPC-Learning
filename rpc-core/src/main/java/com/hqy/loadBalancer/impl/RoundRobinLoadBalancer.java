@@ -1,6 +1,6 @@
-package com.hqy.loadBalance.impl;
+package com.hqy.loadBalancer.impl;
 
-import com.hqy.loadBalance.LoadBalancer;
+import com.hqy.loadBalancer.LoadBalancer;
 
 import java.util.HashMap;
 import java.util.List;

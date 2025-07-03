@@ -1,4 +1,4 @@
-package com.hqy.proxy.retry;
+package com.hqy.retryer;
 
 import com.github.rholder.retry.*;
 import com.hqy.entity.RpcRequest;

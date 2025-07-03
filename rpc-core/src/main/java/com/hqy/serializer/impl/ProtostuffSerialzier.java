@@ -1,6 +1,6 @@
-package com.hqy.serialize.impl;
+package com.hqy.serializer.impl;
 
-import com.hqy.serialize.Serializer;
+import com.hqy.serializer.Serializer;
 import io.protostuff.LinkedBuffer;
 import io.protostuff.ProtostuffIOUtil;
 import io.protostuff.runtime.RuntimeSchema;

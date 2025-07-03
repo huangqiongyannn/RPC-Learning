@@ -3,8 +3,8 @@ package com.hqy.transport.socket;
 import com.hqy.config.RpcClientConfig;
 import com.hqy.entity.RpcRequest;
 import com.hqy.entity.RpcResponse;
-import com.hqy.serialize.SerializeFactory;
-import com.hqy.serialize.Serializer;
+import com.hqy.serializer.SerializeFactory;
+import com.hqy.serializer.Serializer;
 import com.hqy.enumeration.SerializerType;
 import com.hqy.transport.api.RpcClient;
 

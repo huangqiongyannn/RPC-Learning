@@ -1,8 +1,8 @@
-package com.hqy.serialize.impl;
+package com.hqy.serializer.impl;
 
 import com.caucho.hessian.io.HessianInput;
 import com.caucho.hessian.io.HessianOutput;
-import com.hqy.serialize.Serializer;
+import com.hqy.serializer.Serializer;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
