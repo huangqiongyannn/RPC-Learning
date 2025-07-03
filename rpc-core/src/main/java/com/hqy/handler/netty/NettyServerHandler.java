@@ -3,6 +3,7 @@ package com.hqy.handler.netty;
 import com.hqy.entity.RpcRequest;
 import com.hqy.entity.RpcResponse;
 import com.hqy.limiter.impl.TokenBucketRateLimiter;
+import com.hqy.limiter.provider.TokenBucketRateLimiterProvider;
 import com.hqy.provider.service.ServiceProvider;
 import com.hqy.provider.service.impl.ZKServiceProvider;
 import io.netty.channel.ChannelHandlerContext;
@@ -16,8 +17,10 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequest> 
     protected void channelRead0(ChannelHandlerContext ctx, RpcRequest request) throws Exception {
 
         // 限流器
-        boolean token = TokenBucketRateLimiter.getInstance().getToken();
+        String interfaceName = request.getClassName() + "#" + request.getMethodName();
+        boolean token = TokenBucketRateLimiterProvider.getRateLimiter(interfaceName).getToken();
         if (!token) {
+            System.out.println(interfaceName + "接口限流");
             ctx.writeAndFlush(RpcResponse.fail("系统繁忙，请稍后再试！"));
             ctx.close();
             return;
