@@ -24,7 +24,6 @@ public class RpcClientProxy implements InvocationHandler {
 
     private RpcClient rpcClient;
     private Class<?> targetInterface;
-    private ServiceRegister register = ZKServiceRegister.getInstance();
     private ZKServiceCacheManager cacheManager = ZKServiceCacheManager.getInstance();
 
     public RpcClientProxy(RpcClient rpcClient, Class<?> targetInterface) {
