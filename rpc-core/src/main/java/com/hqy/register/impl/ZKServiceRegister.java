@@ -13,15 +13,18 @@ import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.CreateMode;
 
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ZKServiceRegister implements ServiceRegister {
     private static final ZKServiceRegister INSTANCE = new ZKServiceRegister();
     private static final String ZK_ADDRESS = "127.0.0.1:2181";
     private static final String ROOT_PATH = "my-rpc-service"; // 当前服务在zk中的统一命名空间
+    private final ConcurrentHashMap<String, List<String>> cache;
 
     private CuratorFramework client;
 
     private ZKServiceRegister() {
+        cache = new ConcurrentHashMap<>();
         client = CuratorFrameworkFactory.builder()
                 .connectString(ZK_ADDRESS)
                 .sessionTimeoutMs(60000)
@@ -58,7 +61,6 @@ public class ZKServiceRegister implements ServiceRegister {
             } else {
                 System.out.println("该服务地址已注册：" + instancePath);
             }
-
         } catch (Exception e) {
             System.out.println("服务注册失败！" + e.getMessage());
         }
@@ -67,16 +69,20 @@ public class ZKServiceRegister implements ServiceRegister {
 
     @Override
     public List<String> lookup(String serviceName) {
-        try {
-            return client.getChildren().forPath("/" + serviceName);
-        } catch (Exception e) {
-            System.out.println("该服务不存在：" + serviceName);
-            return null;
+        if (!cache.contains(serviceName)) {
+            subscribeWatcherForCache(serviceName);
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
         }
+        return cache.get(serviceName);
     }
 
 
-    public void subscribeWatcherForCache(String serviceName, LoadingCache<String, List<String>> cache) {
+    private void subscribeWatcherForCache(String serviceName) {
         try {
             String path = "/" + serviceName;
 
@@ -90,7 +96,13 @@ public class ZKServiceRegister implements ServiceRegister {
                             case NODE_CREATED:
                             case NODE_CHANGED:
                             case NODE_DELETED:
-                                List<String> updatedList = this.lookup(serviceName);
+                                List<String> updatedList = null;
+                                try {
+                                    updatedList = client.getChildren().forPath("/" + serviceName);
+                                } catch (Exception e) {
+                                    System.out.println("该服务不存在：" + serviceName);
+                                }
+                                cache.remove(serviceName);
                                 cache.put(serviceName, updatedList);
                                 System.out.println("[ZK] 节点变化(" + type + ")，更新缓存：" + serviceName + " -> " + updatedList);
                                 break;
