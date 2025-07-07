@@ -1,10 +1,10 @@
 package com.hqy.register.impl;
 
-import com.google.common.cache.LoadingCache;
 import com.hqy.enumeration.LoadBalanceType;
 import com.hqy.loadBalancer.LoadBalancerFactory;
 import com.hqy.loadBalancer.impl.ConsistentHashLoadBalancer;
 import com.hqy.register.ServiceRegister;
+import com.hqy.utils.TimeUtil;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.recipes.cache.CuratorCache;
@@ -19,12 +19,11 @@ public class ZKServiceRegister implements ServiceRegister {
     private static final ZKServiceRegister INSTANCE = new ZKServiceRegister();
     private static final String ZK_ADDRESS = "127.0.0.1:2181";
     private static final String ROOT_PATH = "my-rpc-service"; // 当前服务在zk中的统一命名空间
-    private final ConcurrentHashMap<String, List<String>> cache;
+    private static ConcurrentHashMap<String, List<String>> cache = new ConcurrentHashMap<>();
 
     private CuratorFramework client;
 
     private ZKServiceRegister() {
-        cache = new ConcurrentHashMap<>();
         client = CuratorFrameworkFactory.builder()
                 .connectString(ZK_ADDRESS)
                 .sessionTimeoutMs(60000)
@@ -69,14 +68,16 @@ public class ZKServiceRegister implements ServiceRegister {
 
     @Override
     public List<String> lookup(String serviceName) {
-        if (!cache.contains(serviceName)) {
+        if (!cache.containsKey(serviceName)) {
+//            System.out.println("==============================");
             subscribeWatcherForCache(serviceName);
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            long startTime = System.currentTimeMillis();
+            long timeout = 6000;
+            while (!cache.contains(serviceName)) {
+                if (System.currentTimeMillis() - startTime > timeout) {
+                    break;
+                }
             }
-
         }
         return cache.get(serviceName);
     }
@@ -104,7 +105,6 @@ public class ZKServiceRegister implements ServiceRegister {
                                 }
                                 cache.remove(serviceName);
                                 cache.put(serviceName, updatedList);
-                                System.out.println("[ZK] 节点变化(" + type + ")，更新缓存：" + serviceName + " -> " + updatedList);
                                 break;
                             default:
                                 break;

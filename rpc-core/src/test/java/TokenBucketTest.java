@@ -15,8 +15,8 @@ public class TokenBucketTest {
         RateLimiter limiter = TokenBucketRateLimiterProvider.getRateLimiter("test");
 
         // 模拟多个线程高并发抢令牌
-        for (int i = 0; i < 100; i++) {
-            new Thread(() -> {
+        for (int i = 0; i < 3; i++) {
+//            new Thread(() -> {
                 RpcClientConfig.getInstance().setSerializerType(SerializerType.PROTOSTUFF);
                 RpcClientConfig.getInstance().setLoadBalanceType(LoadBalanceType.CONSISTENT_HASH);
                 // 创建客户端代理对象
@@ -31,7 +31,7 @@ public class TokenBucketTest {
                     e.printStackTrace();
                 }
                 System.out.println("返回内容：" + response);
-            }, "线程-" + i).start();
+//            }, "线程-" + i).start();
         }
 
 
