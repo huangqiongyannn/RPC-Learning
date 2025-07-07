@@ -10,6 +10,9 @@ import java.io.ObjectOutputStream;
 public class JavaSerializer implements Serializer {
     @Override
     public byte[] serialize(Object obj) {
+        if (obj == null) {
+            return new byte[0];
+        }
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(bos)) {
             oos.writeObject(obj);
@@ -22,6 +25,9 @@ public class JavaSerializer implements Serializer {
 
     @Override
     public <T> T deserialize(byte[] bytes, Class<T> clazz) {
+        if (bytes == null || bytes.length == 0) {
+            return null;
+        }
         try (ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
              ObjectInputStream ois = new ObjectInputStream(bis)) {
             return clazz.cast(ois.readObject());
